@@ -1,0 +1,25 @@
+[project]
+name = "raglean"
+version = "0.1.0"
+description = "Cost/latency optimization layer for production RAG pipelines: semantic caching, complexity-based routing, and context compression, with an eval harness that checks answer quality."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+]
+
+[project.optional-dependencies]
+dashboard = ["streamlit"]
+dev = ["pytest", "httpx"]
+production = ["sentence-transformers", "faiss-cpu", "openai"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["raglean*"]

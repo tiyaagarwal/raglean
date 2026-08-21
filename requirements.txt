@@ -1,0 +1,14 @@
+numpy
+pandas
+scikit-learn
+fastapi
+uvicorn
+pydantic
+streamlit
+pytest
+httpx
+
+# Optional, for production-scale swap-ins (not required to run the demo/benchmarks):
+# faiss-cpu          # replaces the numpy brute-force vector search in cache/index.py
+# sentence-transformers  # replaces the local TF-IDF embedder in cache/embeddings.py
+# openai              # required by providers/openai_provider.py when using real API keys
