@@ -1,0 +1,69 @@
+{
+  "quality_check": {
+    "n_items": 27,
+    "quality": {
+      "mean_optimized_f1": 0.10324695701250303,
+      "mean_baseline_f1": 0.10732808162124337,
+      "mean_f1_delta": -0.004081124608740349,
+      "pct_items_no_quality_loss": 55.55555555555556
+    },
+    "cost_and_latency": {
+      "requests": 27,
+      "cache_hit_rate": 0.2962962962962963,
+      "actual_cost_usd": 0.00181931,
+      "baseline_cost_usd": 0.020617499999999997,
+      "cost_saved_usd": 0.018798189999999996,
+      "cost_saved_pct": 91.17589426458106,
+      "avg_actual_latency_ms": 332.87735784214914,
+      "avg_baseline_latency_ms": 1147.391301486655,
+      "latency_saved_pct": 70.98833175649443,
+      "tokens_saved": 36,
+      "tier_breakdown": {
+        "cache": 8,
+        "cheap": 14,
+        "mid": 4,
+        "premium": 1
+      }
+    },
+    "by_tag": {
+      "simple": {
+        "n": 19,
+        "mean_optimized_f1": 0.10317319991446212,
+        "mean_baseline_f1": 0.10979099245526876,
+        "cache_hit_rate": 0.2631578947368421
+      },
+      "complex": {
+        "n": 6,
+        "mean_optimized_f1": 0.126401920620237,
+        "mean_baseline_f1": 0.13530489118724412,
+        "cache_hit_rate": 0.16666666666666666
+      },
+      "long_context": {
+        "n": 2,
+        "mean_optimized_f1": 0.034482758620689655,
+        "mean_baseline_f1": 0.0,
+        "cache_hit_rate": 1.0
+      }
+    }
+  },
+  "scale_check": {
+    "requests": 500,
+    "cache_hit_rate": 0.962,
+    "actual_cost_usd": 0.00183896,
+    "baseline_cost_usd": 0.45237999999999995,
+    "cost_saved_usd": 0.45054103999999995,
+    "cost_saved_pct": 99.59349219682568,
+    "avg_actual_latency_ms": 19.038019117668874,
+    "avg_baseline_latency_ms": 974.2465378984641,
+    "latency_saved_pct": 98.04587254077028,
+    "tokens_saved": 282,
+    "tier_breakdown": {
+      "cache": 481,
+      "cheap": 14,
+      "mid": 4,
+      "premium": 1
+    },
+    "n_requests": 500,
+    "wall_clock_s": 0.1404405590001261
+  }
+}
