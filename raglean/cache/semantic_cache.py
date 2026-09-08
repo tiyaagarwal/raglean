@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import itertools
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from ..embeddings import BaseEmbedder, LocalHashEmbedder
 from ..providers.base import LLMResponse
