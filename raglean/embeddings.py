@@ -54,8 +54,9 @@ class LocalHashEmbedder(BaseEmbedder):
 class SentenceTransformerEmbedder(BaseEmbedder):
     """Production swap-in. Requires `pip install sentence-transformers`.
     Not used by default so the project has zero heavy/networked dependencies out of
-    the box — flip `RAGLEAN_EMBEDDER=sentence-transformers` (see config.py) once that's
-    installed and you want real semantic quality instead of the offline hash embedder.
+    the box — pass `embedder=SentenceTransformerEmbedder()` to `SemanticCache` or
+    `ContextCompressor` once that's installed and you want real semantic quality
+    instead of the offline hash embedder.
     """
 
     def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
