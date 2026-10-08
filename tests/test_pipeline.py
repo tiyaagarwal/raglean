@@ -22,7 +22,7 @@ def test_second_identical_query_is_a_cache_hit():
 
 
 def test_optimized_cost_is_never_more_than_baseline():
-    pipeline, tracker = _make_pipeline()
+    pipeline, _ = _make_pipeline()
     chunks = ["The refund window is 30 days for physical products."] * 3
 
     result = pipeline.run(
