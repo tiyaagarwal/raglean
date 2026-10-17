@@ -42,3 +42,28 @@ def test_ttl_expiry_evicts_entry():
 
     time.sleep(0.05)
     assert cache.lookup(query) is None
+
+
+def test_namespaces_do_not_share_entries():
+    provider = MockProvider()
+    cache = SemanticCache(similarity_threshold=0.8)
+
+    query = "What is the refund window?"
+    cache.store(query, provider.generate(query, "gpt-4o-mini"), namespace="tenant-a")
+
+    assert cache.lookup(query, namespace="tenant-b") is None
+    assert cache.lookup(query) is None
+    assert cache.lookup(query, namespace="tenant-a") is not None
+
+
+def test_eviction_spans_namespaces():
+    provider = MockProvider()
+    cache = SemanticCache(similarity_threshold=0.8, max_entries=2)
+
+    cache.store("What is the refund window?", provider.generate("q1", "gpt-4o-mini"), namespace="a")
+    cache.store("How long is the warranty?", provider.generate("q2", "gpt-4o-mini"), namespace="b")
+    cache.store("Do you ship to Canada?", provider.generate("q3", "gpt-4o-mini"), namespace="b")
+
+    assert len(cache) == 2
+    assert cache.lookup("What is the refund window?", namespace="a") is None
+    assert cache.lookup("Do you ship to Canada?", namespace="b") is not None

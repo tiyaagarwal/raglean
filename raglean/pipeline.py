@@ -82,7 +82,7 @@ class RAGLeanPipeline:
         """
         context_chunks = context_chunks or []
 
-        cache_entry: CacheEntry | None = self.cache.lookup(query) if self.enable_cache else None
+        cache_entry: CacheEntry | None = self.cache.lookup(query, namespace=tenant) if self.enable_cache else None
         compression_result: CompressionResult | None = None
         routing_decision: RoutingDecision | None = None
         actual_response: LLMResponse | None = None
@@ -115,7 +115,7 @@ class RAGLeanPipeline:
             actual_latency = actual_response.latency_ms
 
             if self.enable_cache:
-                self.cache.store(query, actual_response)
+                self.cache.store(query, actual_response, namespace=tenant)
 
         baseline_response: LLMResponse | None = None
         if compute_real_baseline:

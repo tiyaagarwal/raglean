@@ -57,8 +57,14 @@ class BudgetTracker:
         self._ledgers: dict[str, TenantLedger] = {}
 
     def get_or_create(self, tenant: str, budget_cap_usd: float | None = None) -> TenantLedger:
+        """Returns the tenant's ledger, creating it if needed. A non-None `budget_cap_usd`
+        is applied to an existing ledger too, so a cap can be set (or changed) after the
+        tenant's first request.
+        """
         if tenant not in self._ledgers:
             self._ledgers[tenant] = TenantLedger(tenant=tenant, budget_cap_usd=budget_cap_usd)
+        elif budget_cap_usd is not None:
+            self._ledgers[tenant].budget_cap_usd = budget_cap_usd
         return self._ledgers[tenant]
 
     def record(self, event: RequestEvent, enforce: bool = True) -> TenantLedger:
@@ -81,11 +87,14 @@ class BudgetTracker:
         return sorted(events, key=lambda e: e.timestamp)
 
     def summary(self, tenant: str | None = None) -> dict:
-        events = (
-            self._ledgers[tenant].events
-            if tenant and tenant in self._ledgers
-            else self.all_events()
-        )
+        """Summary for one tenant, or across all tenants when `tenant` is None. An unknown
+        tenant gets an empty summary — never the cross-tenant totals.
+        """
+        if tenant is None:
+            events = self.all_events()
+        else:
+            ledger = self._ledgers.get(tenant)
+            events = ledger.events if ledger else []
         n = len(events)
         if n == 0:
             return {"requests": 0}
