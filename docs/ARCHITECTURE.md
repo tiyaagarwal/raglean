@@ -58,12 +58,13 @@ specific vendor SDK. Ships with:
 
 ### 3.2 Semantic cache (`raglean/cache/`)
 Retrieval-layer cache: embeds the *query*, not just the raw prompt string, and matches
-against a FAISS index of prior queries within a similarity threshold. Cluster-aware
-(Gaussian-Mixture / cosine-threshold clustering) so paraphrases of the same question
-reuse the same answer. TTL + hit/miss counters for observability. Default embedding
-backend is a small local sentence-transformer; falls back to a pure scikit-learn
-hashing-vectorizer embedding if no network is available, so the whole system runs
-offline for demos/CI.
+against a brute-force cosine-similarity index (`NumpyFlatIndex`) of prior queries within
+a similarity threshold — exact nearest-neighbor lookup, not clustering. A FAISS-backed
+index (`IndexFlatIP`/`IVFFlat`/`HNSW`) is a documented drop-in swap via the same
+`VectorIndex` interface once cache size demands it. TTL + hit/miss counters for
+observability. Default embedding backend is `LocalHashEmbedder` (scikit-learn
+`HashingVectorizer`, offline, no model download); `SentenceTransformerEmbedder` is an
+opt-in swap (needs `pip install sentence-transformers`) for real semantic quality.
 
 ### 3.3 Complexity router (`raglean/router/`)
 Scores each incoming query for complexity (heuristics: question length, number of
