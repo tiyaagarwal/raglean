@@ -45,3 +45,14 @@ def test_budget_enforcement_raises_through_pipeline():
             context_chunks=["Some fairly long context. " * 20],
             tenant="tight",
         )
+
+
+def test_cache_is_isolated_per_tenant():
+    pipeline = RAGLeanPipeline(provider=MockProvider())
+    query = "What is the refund window?"
+
+    pipeline.run(query, ["Acme refunds within 30 days."], tenant="acme")
+    assert pipeline.run(query, ["Acme refunds within 30 days."], tenant="acme").cache_hit
+
+    other = pipeline.run(query, ["Globex refunds within 7 days."], tenant="globex")
+    assert not other.cache_hit

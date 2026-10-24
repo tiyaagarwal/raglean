@@ -40,3 +40,18 @@ def test_budget_cap_can_be_bypassed_explicitly():
     tracker.record(_event(cost=0.01))
     tracker.record(_event(cost=0.01), enforce=False)  # explicit override
     assert tracker.summary("acme")["requests"] == 2
+
+
+def test_unknown_tenant_summary_is_empty_not_global():
+    tracker = BudgetTracker()
+    tracker.record(_event(tenant="acme"))
+    assert tracker.summary("someone-else") == {"requests": 0}
+    assert tracker.summary()["requests"] == 1
+
+
+def test_budget_cap_can_be_set_after_first_request():
+    tracker = BudgetTracker()
+    tracker.record(_event(cost=0.01))  # creates "acme" with no cap
+    tracker.get_or_create("acme", budget_cap_usd=0.015)
+    with pytest.raises(BudgetExceededError):
+        tracker.record(_event(cost=0.01))
