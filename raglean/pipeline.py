@@ -109,6 +109,13 @@ class RAGLeanPipeline:
                 context_text = "\n".join(context_chunks)
 
             prompt = self._build_prompt(query, context_text)
+
+            # Worst-case cost estimate (max_tokens output) so a request that would blow
+            # the tenant's budget is rejected before the provider is ever called, not
+            # after the cost has already been incurred.
+            estimated_cost = compute_cost_usd(model_used, _approx_tokens(prompt), 512)
+            self.budget_tracker.preflight_check(tenant, estimated_cost, enforce=enforce_budget)
+
             actual_response = self.provider.generate(prompt, model_used)
             answer = actual_response.text
             actual_cost = actual_response.cost_usd

@@ -61,6 +61,21 @@ class BudgetTracker:
             self._ledgers[tenant] = TenantLedger(tenant=tenant, budget_cap_usd=budget_cap_usd)
         return self._ledgers[tenant]
 
+    def preflight_check(self, tenant: str, estimated_cost_usd: float, enforce: bool = True) -> None:
+        """Raise before an expensive provider call is made, using a worst-case cost
+        estimate. `record()` alone only enforces the cap *after* the call has already
+        happened and the cost has already been incurred, which is too late to stop the
+        overage it is meant to prevent.
+        """
+        ledger = self.get_or_create(tenant)
+        projected = ledger.spent_usd + estimated_cost_usd
+        if enforce and ledger.budget_cap_usd is not None and projected > ledger.budget_cap_usd:
+            raise BudgetExceededError(
+                f"Tenant '{tenant}' would exceed budget cap "
+                f"(${ledger.budget_cap_usd:.4f}); spent so far ${ledger.spent_usd:.4f}, "
+                f"this request is estimated to cost up to ${estimated_cost_usd:.4f}."
+            )
+
     def record(self, event: RequestEvent, enforce: bool = True) -> TenantLedger:
         ledger = self.get_or_create(event.tenant)
         projected = ledger.spent_usd + event.actual_cost_usd

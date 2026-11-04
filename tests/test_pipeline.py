@@ -3,8 +3,18 @@ from raglean.pipeline import RAGLeanPipeline
 from raglean.providers.mock_provider import MockProvider
 
 
-def _make_pipeline():
-    provider = MockProvider()
+class _CountingProvider(MockProvider):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.calls = 0
+
+    def generate(self, prompt, model, max_tokens=512):
+        self.calls += 1
+        return super().generate(prompt, model, max_tokens)
+
+
+def _make_pipeline(provider=None):
+    provider = provider or MockProvider()
     tracker = BudgetTracker()
     return RAGLeanPipeline(provider=provider, budget_tracker=tracker, baseline_model="gpt-4o"), tracker
 
@@ -45,3 +55,24 @@ def test_budget_enforcement_raises_through_pipeline():
             context_chunks=["Some fairly long context. " * 20],
             tenant="tight",
         )
+
+
+def test_budget_enforcement_blocks_the_call_before_it_is_made():
+    """The provider must never be charged for a request the budget cap rejects —
+    enforcing the cap only after the call has already happened is too late."""
+    provider = _CountingProvider()
+    pipeline, tracker = _make_pipeline(provider=provider)
+    tracker.get_or_create("tight", budget_cap_usd=0.0000001)
+
+    import pytest
+
+    from raglean.budget.tracker import BudgetExceededError
+
+    with pytest.raises(BudgetExceededError):
+        pipeline.run(
+            "Explain, in detail, the entire refund and warranty policy end to end.",
+            context_chunks=["Some fairly long context. " * 20],
+            tenant="tight",
+        )
+
+    assert provider.calls == 0
