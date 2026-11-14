@@ -120,7 +120,7 @@ raglean/
   eval/                   QA dataset + F1 metric + eval harness
   benchmark/              synthetic workload + full benchmark report
   dashboard/              Streamlit observability UI
-tests/                    pytest suite (20 tests covering every module above)
+tests/                    pytest suite (21 tests covering every module above)
 docs/ARCHITECTURE.md      full design doc + phased roadmap
 data/benchmark_report.json   output of the last benchmark run
 ```
